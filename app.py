@@ -6,6 +6,7 @@ from charts import POSITION_LABELS
 from charts.distribution import plot_distribution
 from charts.comparaison import plot_comparaison, plot_radar, plot_position_distribution
 from charts.relation import plot_relation
+from charts.age import plot_age_curve
 from charts.budget import plot_budget_top5
 from valuation import add_estimated_value, estimate_value, format_value
 
@@ -130,6 +131,12 @@ with col2:
 st.subheader("Relation vitesse / dribble")
 fig, why, interpretation = plot_relation(sel)
 st.plotly_chart(fig, width="stretch")
+st.caption(f"**Pourquoi ce graphique ?** {why}")
+st.caption(f"**Lecture :** {interpretation}")
+
+st.subheader("Courbe de forme par âge")
+fig, why, interpretation = plot_age_curve(sel)
+st.pyplot(fig, width="stretch")
 st.caption(f"**Pourquoi ce graphique ?** {why}")
 st.caption(f"**Lecture :** {interpretation}")
 
