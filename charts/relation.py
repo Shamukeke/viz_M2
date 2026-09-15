@@ -11,7 +11,8 @@ def plot_relation(sel):
     pour comparer les championnats un par un sans re-filtrer. Les axes sont zoomés sur la
     plage réellement présente dans la sélection plutôt que figés à 20-100, sinon une
     sélection déjà filtrée sur vitesse/dribble se retasse dans un coin du graphique.
-    Deux lignes verticales marquent les quartiles Q1 (25%) et Q3 (75%) de la vitesse."""
+    Des lignes verticales marquent les quartiles Q1 (25%) et Q3 (75%) de la vitesse, et des
+    lignes horizontales les mêmes quartiles pour le dribble."""
     df = sel.copy()
     df["Championnat"] = cap_categories(df["League"])
     palette = categorical_palette(df["Championnat"])
@@ -21,6 +22,8 @@ def plot_relation(sel):
     ylim = nice_limits(sel["DRI"], min_span=20)
     q1_pac = sel["PAC"].quantile(0.25)
     q3_pac = sel["PAC"].quantile(0.75)
+    q1_dri = sel["DRI"].quantile(0.25)
+    q3_dri = sel["DRI"].quantile(0.75)
 
     fig = px.scatter(
         df, x="PAC", y="DRI", color="Championnat",
@@ -47,8 +50,9 @@ def plot_relation(sel):
             showarrow=False, font=dict(size=11, color=TEXT_MUTED),
         )
 
-    # Repères de dispersion sur la vitesse : quartiles Q1 (25%) et Q3 (75%), pour
-    # situer d'un coup d'œil où se trouve le quart le plus lent / le plus rapide.
+    # Repères de dispersion : quartiles Q1 (25%) et Q3 (75%) pour la vitesse (verticales)
+    # et pour le dribble (horizontales), pour situer d'un coup d'œil le quart le plus
+    # faible / le plus fort sur chaque variable.
     fig.add_vline(
         x=q1_pac, line=dict(color=ACCENT, dash="dash", width=1.5),
         annotation_text=f"Q1 (25%) = {q1_pac:.0f}", annotation_position="top",
@@ -57,6 +61,16 @@ def plot_relation(sel):
     fig.add_vline(
         x=q3_pac, line=dict(color=ACCENT, dash="dash", width=1.5),
         annotation_text=f"Q3 (75%) = {q3_pac:.0f}", annotation_position="top",
+        annotation_font=dict(color=ACCENT, size=11),
+    )
+    fig.add_hline(
+        y=q1_dri, line=dict(color=ACCENT, dash="dash", width=1.5),
+        annotation_text=f"Q1 (25%) = {q1_dri:.0f}", annotation_position="right",
+        annotation_font=dict(color=ACCENT, size=11),
+    )
+    fig.add_hline(
+        y=q3_dri, line=dict(color=ACCENT, dash="dash", width=1.5),
+        annotation_text=f"Q3 (75%) = {q3_dri:.0f}", annotation_position="right",
         annotation_font=dict(color=ACCENT, size=11),
     )
 
@@ -92,9 +106,10 @@ def plot_relation(sel):
     why = (
         "Un nuage de points montre la relation entre deux variables quantitatives (vitesse et "
         "dribble), utile pour repérer les profils rapides et techniques. Les lignes verticales "
-        "marquent les quartiles Q1 et Q3 de la vitesse, pour situer le quart le plus lent et le "
-        "quart le plus rapide de la sélection. La légende est cliquable : cliquez sur un "
-        "championnat pour le masquer, double-cliquez pour l'isoler."
+        "marquent les quartiles Q1 et Q3 de la vitesse, les lignes horizontales ceux du "
+        "dribble, pour situer d'un coup d'œil les 25% les plus faibles et les 25% les plus "
+        "forts sur chaque variable. La légende est cliquable : cliquez sur un championnat "
+        "pour le masquer, double-cliquez pour l'isoler."
     )
     interpretation = f"La corrélation entre vitesse et dribble est {strength} (r = {corr:.2f}) sur la sélection actuelle."
     return fig, why, interpretation
